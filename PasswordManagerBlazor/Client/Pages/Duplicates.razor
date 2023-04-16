@@ -1,0 +1,136 @@
+﻿@page "/duplicates"
+@inject IJSRuntime JSRuntime
+
+<body>
+
+    <!-- Alerts -->
+    <div class="alerts">
+        @if (IsErrorVisible)
+        {
+            <div class="audun_warn">
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors:
+                    <li>This user is not active or invalid username/password.</li>
+                </div>
+            </div>
+        }
+
+        @if (IsInfoVisible)
+        {
+            <div class="audun_info">
+                <i class="fa fa-info-circle" aria-hidden="true"></i>
+                <li>Password copied to clipboard.</li>
+            </div>
+        }
+
+        @if (IsLogoutVisible)
+        {
+            <div class="audun_success">
+                <div class="alert alert-info">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Success:
+                    <li>You have been succesfully logged out.</li>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Hamburger menu -->
+    <div class="hamburger-menu">
+        <input id="menu__toggle" type="checkbox" />
+        <label class="menu__btn" for="menu__toggle">
+            <span></span>
+        </label>
+
+        <ul class="menu__box">
+            <li><a class="menu__item" href="/">My Passwords</a></li>
+            <li><a class="menu__item" href="/duplicates">Duplicates</a></li>
+            <li><a class="menu__item" href="/expired">Expired</a></li>
+            <li><a class="menu__item" href="/logout">Logout</a></li>
+        </ul>
+    </div>
+    <br>
+    <br>
+
+    <div class="container">
+        <div class="table_header">
+            <div class="search_password">
+                <form id="search" method="get">
+                    <h2>Duplicated passwords</h2>
+                    <input type="text" name="keyword" size="50" placeholder="Find your password">
+                    <button>Search</button>
+                </form>
+            </div>
+                       <table class="table">
+                <thead>
+                    <tr>
+                        <th>DOMAIN</th>
+                        <th>LOGIN</th>
+                        <th id="password">PASSWORD</th>
+                        <th id="last_change">LAST CHANGE</th>
+                        <th id="add_button">
+                            <a href="/password/add" target="_parent" method="get">
+                                <button class="ghost">Add</button>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="table_content">
+            <table class="table">
+                <tbody>
+                    @foreach (var password in passwordsDto)
+                    {
+                        <tr>
+                            <td>@password.Url</td>
+                            <td>@password.Email</td>
+                            <td id="password">
+                                <form id="clipboard_button_form">
+                                    <button @onclick="() => CopyToClipboard(password.PasswordHash)">Copy to clipboard</button>
+                                </form>
+                            </td>
+                            <td id="last_change">@password.LastChange.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td id="options">
+                                <form id="update_button_form" action="#" method="post">
+                                    <button id="update_button">Update</button>
+                                </form>
+                                <form id="delete_button_form" action="#" method="delete">
+                                    <button id="delete_button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+@code {
+    bool IsErrorVisible { get; set; }
+    bool IsInfoVisible { get; set; }
+    bool IsLogoutVisible { get; set; }
+
+    // Przykładowe dane - zastąp je danymi z bazy danych
+    List<PasswordDto> passwordsDto = new List<PasswordDto>
+    {
+        new PasswordDto { Url = "example.com", Email = "user@example.com", PasswordHash = "password123", LastChange = DateTime.Now },
+        new PasswordDto { Url = "example2.com", Email = "user2@example.com", PasswordHash = "password456", LastChange = DateTime.Now.AddDays(-1) },
+    };
+
+    public class PasswordDto
+    {
+        public string Url { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public DateTime LastChange { get; set; }
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        IsInfoVisible = true;
+    }
+}
+

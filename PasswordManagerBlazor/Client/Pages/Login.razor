@@ -1,0 +1,90 @@
+﻿@page "/login"
+@inject NavigationManager navigationManager
+<head>
+    <meta charset="UTF-8">
+    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/alerts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<div class="alerts">
+    <div @if(ShowError) class="audun_warn">
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors:
+            <li>This user is not active or invalid username/password.</li>
+        </div>
+    </div>
+
+    <div @if(ShowInfo) class="audun_info">
+        <i class="fa fa-info-circle" aria-hidden="true"></i>
+        EXAMPLE INFORMATION
+    </div>
+
+    <div @if(ShowLogout) class="audun_success">
+        <div class="alert alert-info">
+            <i class="fa fa-check-circle" aria-hidden="true"></i> Success:
+            <li>You have been succesfully logged out.</li>
+        </div>
+    </div>
+</div>
+<h2>Password Manager Login Page</h2>
+<div class="container" id="container">
+    <div class="form-container sign-in-container">
+        <EditForm Model="loginModel" OnValidSubmit="HandleValidSubmit">
+            <h1>Sign in</h1>
+            <div class="social-container">
+                <a href="#" class="social"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <span>or use your account</span>
+            <div class="form-group">
+                <label for="username"></label>
+                <InputText id="username" name="username" class="form-control" @bind-Value="loginModel.Username" placeholder="Username" />
+            </div>
+            <div class="form-group">
+                <label for="password"></label>
+                <InputText type="password" id="password" name="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Password" />
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <br>
+                    <button class="col-sm-6 col-sm-offset-3">Sign In</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-right">
+                <h1>Hello, Friend!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <button class="ghost" id="signUp" @onclick="NavigateToRegistration" value="Sign Up">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        @code {
+    private bool ShowError { get; set; } = false;
+    private bool ShowInfo { get; set; } = false;
+    private bool ShowLogout { get; set; } = false;
+
+    private LoginModel loginModel = new LoginModel();
+
+    private async Task HandleValidSubmit()
+    {
+        // Implement your sign in logic here.
+        // If sign in is successful, navigate to another page or update the UI.
+    }
+
+    private void NavigateToRegistration()
+    {
+        navigationManager.NavigateTo("registration");
+    }
+
+    public class LoginModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}

@@ -1,0 +1,61 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+   @* <div class="sidebar">
+       
+    </div>*@
+
+    <div class="main">
+        <div class="top-row px-4">
+            <div class="menu-bar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                            <span class="oi oi-home" aria-hidden="true"></span> Home
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="login">
+                            <span class="oi oi-plus" aria-hidden="true"></span> Login
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="registration">
+                            <span class="oi oi-plus" aria-hidden="true"></span> Registration
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="updated-password">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Update Password
+                        </NavLink>
+                    </li>
+                     <li class="nav-item">
+                        <NavLink class="nav-link" href="token-validator">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> token-validator
+                        </NavLink>
+                    </li> 
+                     <li class="nav-item">
+                        <NavLink class="nav-link" href="duplicates">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Duplicates
+                        </NavLink>
+                    </li>
+                   <li class="nav-item">
+                        <NavLink class="nav-link" href="/password/add">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Password Add
+                        </NavLink>
+                   </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="exipred">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Exipred
+                        </NavLink>
+                   </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>

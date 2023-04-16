@@ -1,0 +1,43 @@
+@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css');
+
+.audun_warn {
+    color: #ffffff;
+    background-color: #FF8080;
+    border-radius:.5em;
+    margin: 10px 0px;
+    padding:12px;
+}
+
+.audun_info {
+    color: #ffffff;
+    background-color: #79CFE0;
+    border-radius:.5em;
+    margin: 10px 0px;
+    padding:12px;
+}
+
+.audun_success {
+    color: #ffffff;
+    background-color: #7DDF7C;
+    border-radius:.5em;
+    margin: 10px 0px;
+    padding:12px;
+}
+
+.alerts {
+	position: absolute;
+	float: left;
+	top: 0;
+	font-size: small;
+	right: 0%;
+	width: fit-content;
+	overflow: hidden;
+	transition: transform 0.6s ease-in-out;
+	z-index: 6;
+	width: 320px;
+}
+
+li {
+	list-style-type: disc;
+	padding-left: 4px;
+}

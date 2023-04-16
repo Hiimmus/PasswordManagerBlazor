@@ -1,0 +1,33 @@
+﻿@page "/token-validator"
+
+<h1>Token Validator</h1>
+<br>
+<EditForm Model="@tokenValidatorModel" OnValidSubmit="@HandleValidSubmit">
+    <div class="form-group">
+        <InputText id="email" name="email" class="form-control" autofocus="autofocus" placeholder="Email" @bind-Value="@tokenValidatorModel.Email" />
+    </div>
+    <div class="form-group">
+        <InputText type="password" id="token" name="token" class="form-control" placeholder="Token" @bind-Value="@tokenValidatorModel.Token" />
+    </div>
+    <br>
+    <div class="form-group">
+        <button type="submit" name="login-submit" id="login-submit" class="form-control btn btn-primary" value="Sumbit">Submit</button>
+    </div>
+</EditForm>
+
+<p>Already registered? <a href="/">Sign In</a></p>
+
+@code {
+    private TokenValidatorModel tokenValidatorModel = new TokenValidatorModel();
+
+    private void HandleValidSubmit()
+    {
+        // Logika walidacji tokena
+    }
+
+    public class TokenValidatorModel
+    {
+        public string Email { get; set; }
+        public string Token { get; set; }
+    }
+}
