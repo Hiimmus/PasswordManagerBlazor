@@ -1,12 +1,17 @@
-/*
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+@font-face {
+	font-family: 'Montserrat';
+	src: url('/fonts/Montserrat-Regular.ttf') format('truetype');
+	/* Add additional font files here for different font weights or styles */
+}
+
 
 * {
 	box-sizing: border-box;
 }
 
-body {
+html, body {
 	background: #f6f5f7;
 	display: flex;
 	justify-content: center;
@@ -122,6 +127,10 @@ input[type="checkbox"] {
 	left: 0;
 	width: 50%;
 	z-index: 2;
+}
+
+#sign-in {
+	color: black;
 }
 
 .container.right-panel-active .sign-in-container {
@@ -267,4 +276,4 @@ footer i {
 footer a {
     color: #3c97bf;
     text-decoration: none;
-}*/
+}

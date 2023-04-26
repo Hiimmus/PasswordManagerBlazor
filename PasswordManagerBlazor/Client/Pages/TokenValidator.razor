@@ -1,19 +1,40 @@
 ﻿@page "/token-validator"
+@inject NavigationManager navigationManager
+<head>
+    <meta charset="UTF-8">
+    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/alerts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<h2>Token Validator</h2>
+<div class="container" id="container">
+    <div class="form-container sign-in-container">
+        <br>
+        <EditForm Model="@tokenValidatorModel" OnValidSubmit="@HandleValidSubmit">
+            <h1 id="sign-in">Validate your account</h1>
+            <div class="form-group">
+                <InputText id="email" name="email" class="form-control" autofocus="autofocus" placeholder="Email" @bind-Value="@tokenValidatorModel.Email" />
+            </div>
+            <div class="form-group">
+                <InputText type="password" id="token" name="token" class="form-control" placeholder="Token" @bind-Value="@tokenValidatorModel.Token" />
+            </div>
+            <br>
+            <div class="form-group">
+                <button>Submit</button>
+            </div>
+        </EditForm>
+    </div>
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-right">
+                <h1>Already registered?</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <button class="ghost" id="signUp" @onclick="NavigateToLogin" value="Sign In">Sign In</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h1>Token Validator</h1>
-<br>
-<EditForm Model="@tokenValidatorModel" OnValidSubmit="@HandleValidSubmit">
-    <div class="form-group">
-        <InputText id="email" name="email" class="form-control" autofocus="autofocus" placeholder="Email" @bind-Value="@tokenValidatorModel.Email" />
-    </div>
-    <div class="form-group">
-        <InputText type="password" id="token" name="token" class="form-control" placeholder="Token" @bind-Value="@tokenValidatorModel.Token" />
-    </div>
-    <br>
-    <div class="form-group">
-        <button type="submit" name="login-submit" id="login-submit" class="form-control btn btn-primary" value="Sumbit">Submit</button>
-    </div>
-</EditForm>
 
 <p>Already registered? <a href="/">Sign In</a></p>
 
@@ -30,4 +51,12 @@
         public string Email { get; set; }
         public string Token { get; set; }
     }
+
+    private void NavigateToLogin()
+    {
+        navigationManager.NavigateTo("login");
+    }
+
 }
+
+

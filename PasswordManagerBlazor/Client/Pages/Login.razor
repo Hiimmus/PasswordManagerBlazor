@@ -6,7 +6,7 @@
     <link href="css/alerts.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<div class="alerts">
+@*<div class="alerts">
     <div @if(ShowError) class="audun_warn">
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors:
@@ -25,12 +25,12 @@
             <li>You have been succesfully logged out.</li>
         </div>
     </div>
-</div>
+</div>*@
 <h2>Password Manager Login Page</h2>
 <div class="container" id="container">
     <div class="form-container sign-in-container">
         <EditForm Model="loginModel" OnValidSubmit="HandleValidSubmit">
-            <h1>Sign in</h1>
+            <h1 id="sign-in">Sign in</h1>
             <div class="social-container">
                 <a href="#" class="social"><i class="fa-brands fa-facebook"></i></a>
                 <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
@@ -39,17 +39,14 @@
             <span>or use your account</span>
             <div class="form-group">
                 <label for="username"></label>
-                <InputText id="username" name="username" class="form-control" @bind-Value="loginModel.Username" placeholder="Username" />
+                <InputText name="username" class="form-control" @bind-Value="loginModel.Username" placeholder="Username" />
+                <InputText type="password" name="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Password" />
             </div>
+            <br />
             <div class="form-group">
-                <label for="password"></label>
-                <InputText type="password" id="password" name="password" class="form-control" @bind-Value="loginModel.Password" placeholder="Password" />
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <br>
-                    <button class="col-sm-6 col-sm-offset-3">Sign In</button>
-                </div>
+
+                    <button>Sign In</button>
+
             </div>
         </EditForm>
     </div>
