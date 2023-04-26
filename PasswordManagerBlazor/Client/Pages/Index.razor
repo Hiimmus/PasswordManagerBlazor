@@ -1,6 +1,12 @@
 ﻿@page "/index"
 @using PasswordManagerBlazor.Shared.DTOs;
 
+<head>
+    <meta charset="UTF-8">
+    <link href="css/main.css" rel="stylesheet" />
+    <link href="css/alerts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
 <body>
 
     @* Alerts *@
@@ -26,9 +32,11 @@
     <div class="container">
         <div class="table_header">
             <div class="search_password">
-                <h2>Here are your saved passwords</h2>
-                <input type="text" name="keyword" size="50" placeholder="Find your password" @bind="Keyword" />
-                <button @onclick="Search">Search</button>
+                <form id="search" method="get">
+                    <h2>Here are your passwords</h2>
+                    <input type="text" name="keyword" size="50" placeholder="Find your password">
+                    <button>Search</button>
+                </form>
             </div>
             <table class="table">
                 <thead>
