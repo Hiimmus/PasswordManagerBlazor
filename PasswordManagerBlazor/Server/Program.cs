@@ -4,11 +4,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+<<<<<<< HEAD
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PasswordManagerBlazor.Server.Data;
 using PasswordManagerBlazor.Server.Services;
 using System.Text;
+=======
+using PasswordManagerBlazor.Server.Data;
+>>>>>>> DB_SQL
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,12 @@ var Configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
