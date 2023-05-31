@@ -1,5 +1,7 @@
 ﻿@page "/login"
 @inject NavigationManager navigationManager
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
 <head>
     <meta charset="UTF-8">
     <link href="css/main.css" rel="stylesheet" />
@@ -69,10 +71,36 @@
     private LoginModel loginModel = new LoginModel();
 
     private async Task HandleValidSubmit()
+{
+   @inject IJSRuntime JsRuntime
+
+private async Task HandleValidSubmit()
+{
+    var response = await Http.PostAsJsonAsync<UserLoginDto>("api/user/login", new UserLoginDto 
+    { 
+        Email = loginModel.Username, 
+        Password = loginModel.Password 
+    });
+
+    if (response.IsSuccessStatusCode)
     {
-        // Implement your sign in logic here.
-        // If sign in is successful, navigate to another page or update the UI.
+        var jwtToken = await response.Content.ReadAsStringAsync();
+        
+        // Przechowaj token JWT w local storage przeglądarki
+        await JsRuntime.InvokeVoidAsync("localStorageFunctions.setItem", "jwtToken", jwtToken);
+
+        // Przekieruj użytkownika na inną stronę
+        navigationManager.NavigateTo("dashboard");
     }
+    else
+    {
+        // Wyświetl komunikat o błędzie
+        ShowError = true;
+    }
+}
+
+}
+
 
     private void NavigateToRegistration()
     {
