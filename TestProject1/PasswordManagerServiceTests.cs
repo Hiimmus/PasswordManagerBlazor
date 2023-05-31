@@ -325,8 +325,6 @@ namespace TestProject1
             //WHEN
             var result = await _passwordManagerService.GetExpiredPasswordsForUser(userId1);
 
-
-
             Assert.NotNull(result);
             Assert.Equal(1, result.Count());
         }
