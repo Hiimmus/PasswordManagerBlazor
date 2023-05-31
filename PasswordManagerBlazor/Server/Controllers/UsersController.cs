@@ -11,80 +11,55 @@ namespace PasswordManagerBlazor.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IUserRegistrationService _userRegistrationService;
+        private readonly IUserLoginService _userLoginService;
 
-        public UsersController(ApplicationDbContext dbContext)
+        public UserController(IUserRegistrationService userRegistrationService, IUserLoginService userLoginService)
         {
-            _dbContext = dbContext;
+            _userRegistrationService = userRegistrationService;
+            _userLoginService = userLoginService;
         }
-        //public class UserController : ControllerBase
-        //{
-        //    private readonly IUserRegistrationService _userRegistrationService;
-        //    private readonly IUserLoginService _userLoginService;
 
-        //    public UserController(IUserRegistrationService userRegistrationService, IUserLoginService userLoginService)
-        //    {
-        //        _userRegistrationService = userRegistrationService;
-        //        _userLoginService = userLoginService;
-        //    }
-
-        //[HttpPost]
-        //[Route("register")]
-        //public async Task<IActionResult> Register([FromBody] UserRegistrationDto userDto)
-        //{
-        //    if (userDto == null || string.IsNullOrEmpty(userDto.Password))
-        //    {
-        //        return BadRequest("Invalid user data.");
-        //    }
-
-        //    var jwtToken = await _userRegistrationService.RegisterUser(userDto);
-
-        //    if (jwtToken == null)
-        //    {
-        //        return BadRequest("Registration failed");
-        //    }
-
-        //    return Ok(new { Token = jwtToken });
-        //}
         [HttpPost]
-        public async Task<IActionResult> AddUser()
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto userDto)
         {
-            var user = new User { FirstName = "Test User", LastName = "Test Name", Active = true, Hash = "1234567qwert", Email = "test@email.com" };
+            if (userDto == null || string.IsNullOrEmpty(userDto.Password))
+            {
+                return BadRequest("Invalid user data.");
+            }
 
-            var password = new PasswordModel { Email = "test@email.com", PasswordHash = "Mleko", Url = "example.com", LastChange = DateTime.Now, User = user };
+            var jwtToken = await _userRegistrationService.RegisterUser(userDto);
 
+            if (jwtToken == null)
+            {
+                return BadRequest("Registration failed");
+            }
 
-
-            _dbContext.Users.Add(user);
-            _dbContext.UserPasswords.Add(password);
-            await _dbContext.SaveChangesAsync();
-            var user = new User { FirstName = "Test User", LastName = "Test Name", Email="test@email.com", Password="Mleko", Active=true, Hash="1234567qwert"};
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync();
-
+            return Ok(new { Token = jwtToken });
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> Login(UserLoginDto userLoginDto)
-        //{
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
 
-        //    if (userLoginDto == null || string.IsNullOrEmpty(userLoginDto.Password))
-        //    {
-        //        return BadRequest("Invalid login data.");
-        //    }
+            if (userLoginDto == null || string.IsNullOrEmpty(userLoginDto.Password))
+            {
+                return BadRequest("Invalid login data.");
+            }
 
-        //    var jwtToken = await _userLoginService.LoginUser(userLoginDto);
+            var jwtToken = await _userLoginService.LoginUser(userLoginDto);
 
-        //    if (string.IsNullOrEmpty(jwtToken))
-        //    {
-        //        return Unauthorized();
-        //    }
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                return Unauthorized();
+            }
 
-        //    return Ok(new { Token = jwtToken });
-        //}
+            return Ok(new { Token = jwtToken });
+        }
     }
 
 }
