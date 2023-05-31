@@ -49,6 +49,8 @@ builder.Services.AddSession(options =>
 // Register User services
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 builder.Services.AddScoped<IUserLoginService, UserLoginService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IPasswordManagerService, PasswordManagerService>();
 
 // Register Jwt Token Generator
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();

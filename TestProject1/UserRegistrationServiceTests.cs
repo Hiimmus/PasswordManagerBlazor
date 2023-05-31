@@ -33,6 +33,9 @@ namespace TestProject1
         [Fact]
         public async Task RegisterUser_ShouldCreateUserAndReturnJwtToken()
         {
+            _context.Users.RemoveRange(_context.Users);
+            _context.SaveChanges();
+
             // Arrange
             var userDto = new UserRegistrationDto
             {

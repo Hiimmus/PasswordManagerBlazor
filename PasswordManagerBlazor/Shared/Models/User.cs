@@ -22,11 +22,11 @@ namespace PasswordManagerBlazor.Shared.Models
         public User() { }
 
        
-/*
+
         public override string ToString()
         {
             return $"User{{ Id={Id}, FirstName='{FirstName}', LastName='{LastName}', Email='{Email}', Password='*********', Roles={Roles} }}";
         }
-*/
+
     }
 }

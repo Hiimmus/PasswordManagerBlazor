@@ -26,7 +26,7 @@ using System.ComponentModel.DataAnnotations.Schema;
             [ForeignKey("UserId")]
             public User User { get; set; }
 
-            public int UserId { get; set; }
+            public long UserId { get; set; }
 
             public PasswordModel() { }
 
