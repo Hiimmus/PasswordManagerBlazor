@@ -9,6 +9,8 @@ namespace PasswordManagerBlazor.Shared.DTOs
         public string PasswordHash { get; set; }
         public DateTime LastChange { get; set; }
 
+        public bool Duplicate { get; set; }
+
         public PasswordDto()
         {
         }

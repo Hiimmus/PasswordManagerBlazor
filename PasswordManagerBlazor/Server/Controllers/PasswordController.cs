@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PasswordManagerBlazor.Server.Services;
 using PasswordManagerBlazor.Shared.DTOs;
+using System.Security.Claims;
 
 namespace PasswordManagerBlazor.Server.Controllers
 {
@@ -35,6 +36,20 @@ namespace PasswordManagerBlazor.Server.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-    }
 
+        // GET: api/password
+        [HttpGet]
+        public async Task<IActionResult> GetPasswords()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var passwords = await _passwordManagerService.GetPasswordsForUser(long.Parse(userId));
+
+            if (passwords == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(passwords);
+        }
+    }
 }

@@ -18,6 +18,7 @@ namespace PasswordManagerBlazor.Shared.Models
         public bool Active { get; set; }
 
         public ICollection<Role> Roles { get; set; }
+        public ICollection<PasswordModel> Passwords { get; set; }
 
         public User() { }
 

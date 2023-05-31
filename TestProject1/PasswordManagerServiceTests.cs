@@ -8,6 +8,8 @@ using PasswordManagerBlazor.Shared.Models;
 using System;
 using System.Security.Claims;
 using Xunit;
+using static PasswordManagerBlazor.Client.Pages.Duplicates;
+using PasswordDto = PasswordManagerBlazor.Shared.DTOs.PasswordDto;
 
 namespace TestProject1
 {
@@ -16,19 +18,18 @@ namespace TestProject1
         private PasswordManagerService _passwordManagerService;
         private ApplicationDbContext _context;
 
-        public PasswordManagerServiceTests()
+        private void Setup(string databaseName)
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .UseInMemoryDatabase(databaseName)
                 .Options;
 
             _context = new ApplicationDbContext(options);
 
-            // TODO: Set up a mock IHttpContextAccessor that returns a ClaimsPrincipal with a NameIdentifier claim.
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
             {
-            new Claim(ClaimTypes.NameIdentifier, "1"),
+                new Claim(ClaimTypes.NameIdentifier, "1"),
             }));
 
             mockHttpContextAccessor.Setup(m => m.HttpContext.User).Returns(user);
@@ -38,8 +39,8 @@ namespace TestProject1
         [Fact]
         public async void AddPassword_AddsPasswordCorrectly()
         {
-            _context.UserPasswords.RemoveRange(_context.UserPasswords);
-            _context.SaveChanges();
+            Setup(Guid.NewGuid().ToString());
+
             var passwordDto = new PasswordDto
             {
                 Url = "https://example.com",
@@ -60,10 +61,8 @@ namespace TestProject1
         [Fact]
         public async void AddPassword_AddsPasswordCorrectlyWithDuplicates()
         {
-            _context.UserPasswords.RemoveRange(_context.UserPasswords);
-            _context.SaveChanges();
+            Setup(Guid.NewGuid().ToString());
 
-            //GIVEN
             var passwordDto1 = new PasswordDto
             {
                 Url = "https://example.com",
@@ -78,7 +77,6 @@ namespace TestProject1
                 PasswordHash = "nowyhash",
             };
 
-            //WHEN
             await _passwordManagerService.AddPassword(passwordDto1);
 
             var passwordModel1 = await _context.UserPasswords.FirstOrDefaultAsync(p => p.Email == passwordDto1.Email && p.Url == passwordDto1.Url);
@@ -90,15 +88,12 @@ namespace TestProject1
                                     .ToListAsync();
 
             Assert.NotNull(passwordModels);
-
-            // Sprawdź czy obiekt passwordModel1 ma właściwe wartości
             Assert.Equal(2, passwordModels.Count);
             Assert.Equal(passwordDto1.Email, passwordModels[0].Email);
             Assert.Equal(passwordDto1.Url, passwordModels[0].Url);
             Assert.Equal(passwordDto1.PasswordHash, passwordModels[0].PasswordHash);
             Assert.Equal(true, passwordModels[0].Duplicate);
 
-            // Sprawdź czy obiekt passwordModel2 ma właściwe wartości
             if (passwordModels.Count > 1)
             {
                 Assert.Equal(passwordDto2.Email, passwordModels[1].Email);
@@ -107,5 +102,39 @@ namespace TestProject1
                 Assert.Equal(true, passwordModels[1].Duplicate);
             }
         }
+
+        [Fact]
+        public async void GetPasswordsForUser_ReturnsCorrectPasswords()
+        {
+            Setup(Guid.NewGuid().ToString());
+            long userId1 = 1;
+            long userId2 = 2;
+
+            var user1 = new User { Id = userId1, Email = "user1@example.com", FirstName = "User1", LastName = "Test", Hash = "hash1", Active = true };
+            var user2 = new User { Id = userId2, Email = "user2@example.com", FirstName = "User2", LastName = "Test", Hash = "hash2", Active = true };
+            await _context.Users.AddRangeAsync(user1, user2);
+            await _context.SaveChangesAsync();
+
+            // Check that the users were added correctly.
+            var users = await _context.Users.ToListAsync();
+            Assert.Equal(2, users.Count);
+
+            var password1 = new PasswordModel { Email = "user1@example.com", PasswordHash = "hash1", Url = "url1", UserId = userId1 };
+            var password2 = new PasswordModel { Email = "user1@example.com", PasswordHash = "hash2", Url = "url2", UserId = userId1 };
+            var password3 = new PasswordModel { Email = "user2@example.com", PasswordHash = "hash3", Url = "url3", UserId = userId2 };
+
+            await _context.UserPasswords.AddRangeAsync(password1, password2, password3);
+            await _context.SaveChangesAsync();
+
+            // Check that the passwords were added correctly.
+            var passwords = await _context.UserPasswords.ToListAsync();
+            Assert.Equal(3, passwords.Count);
+
+            var result = await _passwordManagerService.GetPasswordsForUser(userId1);
+
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+        }
+
     }
 }

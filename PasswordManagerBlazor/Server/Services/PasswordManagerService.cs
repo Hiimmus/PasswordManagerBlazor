@@ -9,6 +9,7 @@ namespace PasswordManagerBlazor.Server.Services
     public interface IPasswordManagerService
     {
         Task AddPassword(PasswordDto passworddto);
+        Task<IEnumerable<PasswordDto>> GetPasswordsForUser(long userId);
     }
 
     public class PasswordManagerService : IPasswordManagerService
@@ -25,6 +26,7 @@ namespace PasswordManagerBlazor.Server.Services
         public async Task AddPassword(PasswordDto passwordDto)
         {
             var userId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            //ewentualnie wywolane w controlerze i przekazane jako argument to : var userId = User.FindFirst(ClaimTypes.Name)?.Value; 
 
             var existingPassword = await _context.UserPasswords
                 .Where(p => p.UserId == userId && p.Email == passwordDto.Email && p.Url == passwordDto.Url)
@@ -48,5 +50,25 @@ namespace PasswordManagerBlazor.Server.Services
             _context.UserPasswords.Add(passwordModel);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<PasswordDto>> GetPasswordsForUser(long userId)
+        {
+            var user = await _context.Users.Include(u => u.Passwords).FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user.Passwords.Select(p => new PasswordDto
+            {
+                Id = ((int)p.Id),
+                Url = p.Url,
+                Email = p.Email,
+                PasswordHash = p.PasswordHash,
+                Duplicate = p.Duplicate
+            }).ToList();
+        }
+
     }
 }

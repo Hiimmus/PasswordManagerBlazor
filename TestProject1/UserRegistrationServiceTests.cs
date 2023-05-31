@@ -33,6 +33,7 @@ namespace TestProject1
         [Fact]
         public async Task RegisterUser_ShouldCreateUserAndReturnJwtToken()
         {
+            _context.UserPasswords.RemoveRange(_context.UserPasswords);
             _context.Users.RemoveRange(_context.Users);
             _context.SaveChanges();
 
@@ -89,7 +90,7 @@ namespace TestProject1
             var ex = await Assert.ThrowsAsync<Exception>(() => _service.RegisterUser(newUserDto));
             Assert.Equal("User with the same email already exists.", ex.Message);
         }
-        
+
 
 
 
