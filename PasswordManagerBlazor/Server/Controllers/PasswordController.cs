@@ -51,5 +51,20 @@ namespace PasswordManagerBlazor.Server.Controllers
 
             return Ok(passwords);
         }
+
+        // DELETE: api/password/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePassword(long id)
+        {
+            try
+            {
+                await _passwordManagerService.RemovePassword(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

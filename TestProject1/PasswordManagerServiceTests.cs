@@ -136,5 +136,37 @@ namespace TestProject1
             Assert.Equal(2, result.Count());
         }
 
+        [Fact]
+        public async void DeletePasswordForUsers()
+        {
+            Setup(Guid.NewGuid().ToString());
+            long userId1 = 1;
+            long userId2 = 2;
+
+            var user1 = new User { Id = userId1, Email = "user1@example.com", FirstName = "User1", LastName = "Test", Hash = "hash1", Active = true };
+            var user2 = new User { Id = userId2, Email = "user2@example.com", FirstName = "User2", LastName = "Test", Hash = "hash2", Active = true };
+            await _context.Users.AddRangeAsync(user1, user2);
+            await _context.SaveChangesAsync();
+
+            // Check that the users were added correctly.
+            var users = await _context.Users.ToListAsync();
+            Assert.Equal(2, users.Count);
+
+            var password1 = new PasswordModel { Email = "user1@example.com", PasswordHash = "hash1", Url = "url1", UserId = userId1 };
+            var password2 = new PasswordModel { Email = "user1@example.com", PasswordHash = "hash2", Url = "url2", UserId = userId1 };
+            var password3 = new PasswordModel { Email = "user2@example.com", PasswordHash = "hash3", Url = "url3", UserId = userId2 };
+
+            await _context.UserPasswords.AddRangeAsync(password1, password2, password3);
+            await _context.SaveChangesAsync();
+
+            // Check that the passwords were added correctly.
+            var passwords = await _context.UserPasswords.ToListAsync();
+            Assert.Equal(3, passwords.Count);
+
+             await _passwordManagerService.RemovePassword(passwords[0].Id);
+            var passwords_after_delete = await _context.UserPasswords.ToListAsync();
+            Assert.Equal(2, passwords_after_delete.Count);
+        }
+
     }
 }

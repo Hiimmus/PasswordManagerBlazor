@@ -10,6 +10,8 @@ namespace PasswordManagerBlazor.Server.Services
     {
         Task AddPassword(PasswordDto passworddto);
         Task<IEnumerable<PasswordDto>> GetPasswordsForUser(long userId);
+
+        Task RemovePassword(long passwordId);
     }
 
     public class PasswordManagerService : IPasswordManagerService
@@ -69,6 +71,17 @@ namespace PasswordManagerBlazor.Server.Services
                 Duplicate = p.Duplicate
             }).ToList();
         }
+
+        public async Task RemovePassword(long passwordId)
+        {
+            var password = await _context.UserPasswords.FindAsync(passwordId);
+            if (password != null)
+            {
+                _context.UserPasswords.Remove(password);
+                await _context.SaveChangesAsync();
+            }
+        }
+
 
     }
 }
