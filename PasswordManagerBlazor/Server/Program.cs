@@ -4,15 +4,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-<<<<<<< HEAD
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PasswordManagerBlazor.Server.Data;
 using PasswordManagerBlazor.Server.Services;
 using System.Text;
-=======
 using PasswordManagerBlazor.Server.Data;
->>>>>>> DB_SQL
 
 var builder = WebApplication.CreateBuilder(args);
 
