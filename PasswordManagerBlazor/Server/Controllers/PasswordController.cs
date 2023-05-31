@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using PasswordManagerBlazor.Client.Pages;
 using PasswordManagerBlazor.Server.Services;
 using PasswordManagerBlazor.Shared.DTOs;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 
 namespace PasswordManagerBlazor.Server.Controllers
@@ -21,6 +24,7 @@ namespace PasswordManagerBlazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> PostPassword([FromBody] PasswordDto passwordDto)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -28,7 +32,8 @@ namespace PasswordManagerBlazor.Server.Controllers
 
             try
             {
-                await _passwordManagerService.AddPassword(passwordDto);
+                var userId = User.FindFirst(ClaimTypes.Name)?.Value;
+                await _passwordManagerService.AddPassword(passwordDto, long.Parse(userId));
                 return Ok();
             }
             catch (Exception ex)
@@ -54,7 +59,7 @@ namespace PasswordManagerBlazor.Server.Controllers
 
         // DELETE: api/password/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePassword(long id)
+        public async Task<IActionResult> DeletePassword(int id)
         {
             try
             {
@@ -65,6 +70,46 @@ namespace PasswordManagerBlazor.Server.Controllers
             {
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        // PUT: api/password/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePassword(int id, [FromBody] PasswordDto passwordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != passwordDto.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _passwordManagerService.UpdatePassword(passwordDto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        // GET: api/password/duplicates
+        [HttpGet("duplicates")]
+        public async Task<IActionResult> GetDuplicatePasswords()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.Name);
+            var passwords = await _passwordManagerService.GetDuplicatePasswordsForUser(long.Parse(userId));
+
+            if (passwords == null || !passwords.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(passwords);
         }
     }
 }
