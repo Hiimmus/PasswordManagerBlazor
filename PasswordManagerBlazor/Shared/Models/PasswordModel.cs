@@ -23,7 +23,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
             public bool Duplicate { get; set; }
 
-            [ForeignKey("UserId")]
+            [ForeignKey("User")]
             public User User { get; set; }
 
             public long UserId { get; set; }

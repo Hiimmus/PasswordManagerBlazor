@@ -1,6 +1,9 @@
 ﻿@page "/registration"
 @inject NavigationManager navigationManager
 @using System.ComponentModel.DataAnnotations
+@using PasswordManagerBlazor.Shared.DTOs
+@inject HttpClient Http
+
 <head>
     <meta charset="UTF-8">
     <link href="css/main.css" rel="stylesheet" />
@@ -65,10 +68,37 @@
 @code {
     private RegistrationModel registrationModel = new RegistrationModel();
 
-    private void HandleValidSubmit()
+   private async Task HandleValidSubmit()
+{
+    var userDto = new UserRegistrationDto 
     {
-        // Logika rejestracji
+        Email = registrationModel.Email,
+        Password = registrationModel.Password,
+        FirstName = registrationModel.FirstName,
+        LastName = registrationModel.LastName
+    };
+
+    try
+    {
+        var response = await Http.PostAsJsonAsync("api/user/register", userDto);
+        if (response.IsSuccessStatusCode)
+        {
+            // Zarejestrowano pomyślnie
+            navigationManager.NavigateTo("login");
+        }
+        else
+        {
+            // Błąd rejestracji
+            Console.WriteLine($"Error: {response.StatusCode} {response.ReasonPhrase}");
+        }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Exception: {ex.Message}");
+    }
+}
+
+
 
     private void NavigateToLogin()
     {

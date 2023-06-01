@@ -11,8 +11,8 @@ using PasswordManagerBlazor.Server.Data;
 namespace PasswordManagerBlazor.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230523201222_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230531215429_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,40 @@ namespace PasswordManagerBlazor.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("EmailDetails");
+                });
+
+            modelBuilder.Entity("PasswordManagerBlazor.Shared.Models.PasswordModel", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Duplicate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastChange")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPasswords");
                 });
 
             modelBuilder.Entity("PasswordManagerBlazor.Shared.Models.Role", b =>
@@ -92,13 +126,20 @@ namespace PasswordManagerBlazor.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PasswordManagerBlazor.Shared.Models.PasswordModel", b =>
+                {
+                    b.HasOne("PasswordManagerBlazor.Shared.Models.User", "User")
+                        .WithMany("Passwords")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("PasswordManagerBlazor.Shared.Models.Role", b =>
@@ -110,6 +151,8 @@ namespace PasswordManagerBlazor.Server.Migrations
 
             modelBuilder.Entity("PasswordManagerBlazor.Shared.Models.User", b =>
                 {
+                    b.Navigation("Passwords");
+
                     b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
