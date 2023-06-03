@@ -1,8 +1,15 @@
-﻿@page "/registration"
+﻿@page "/user/registration"
 @inject NavigationManager navigationManager
 @using System.ComponentModel.DataAnnotations
 @using PasswordManagerBlazor.Shared.DTOs
 @inject HttpClient Http
+@inject ILogger<Registration> _logger
+@using Microsoft.Extensions.Logging
+@*@inject Microsoft.Extensions.Logging.ILogger<Registration> Log*@
+@using System.Text.Json 
+@using System.Text
+@using System.Net.Http.Headers;
+
 
 <head>
     <meta charset="UTF-8">
@@ -12,42 +19,50 @@
 </head>
 <h2>Password Manager Registration Page</h2>
 <br>
-<EditForm Model="@registrationModel" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@registrationModel" OnValidSubmit="@HandleValidSubmit" >
     <DataAnnotationsValidator />
     <ValidationSummary />
-
+    
 <body>
 	<div class="container" id="container">
 		<div class="form-container sign-in-container">
-			<form class=registration method="post">
-                    <h1 id="sign-in">Sign Up</h1>
-                    <div class="form-group">
-                        <InputText id="firstName" class="form-control" placeholder="First Name" @bind-Value="@registrationModel.FirstName" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="lastName" class="form-control" placeholder="Last Name" @bind-Value="@registrationModel.LastName" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="email" class="form-control" placeholder="E-mail" @bind-Value="@registrationModel.Email" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="confirmEmail" class="form-control" placeholder="Confirm E-mail" @bind-Value="@registrationModel.ConfirmEmail" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="passwd" class="form-control" type="password" placeholder="Password" @bind-Value="@registrationModel.Password" />
-                    </div>
-                    <div class="form-group">
-                        <InputText id="confirmPassword" class="form-control" type="password" placeholder="Confirm Password" @bind-Value="@registrationModel.ConfirmPassword" />
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label" for="terms">
-                            <InputCheckbox id="terms" @bind-Value="@registrationModel.Terms" /> I agree with the <a href="#">terms and conditions</a> for Registration.
-                        </label>
-                    </div>
+
+    <form class=registration method="post">
+                <h1 id="sign-in">Sign Up</h1>
+                            <div class="form-group">
+                                <InputText id="firstName" class="form-control" placeholder="First Name" @bind-Value="@registrationModel.FirstName" />
+                                <ValidationMessage For="@(() => registrationModel.FirstName)" />
+                            </div>
+                            <div class="form-group">
+                                <InputText id="lastName" class="form-control" placeholder="Last Name" @bind-Value="@registrationModel.LastName" />
+                                <ValidationMessage For="@(() => registrationModel.LastName)" />
+                            </div>
+                            <div class="form-group">
+                                <InputText id="email" class="form-control" placeholder="E-mail" @bind-Value="@registrationModel.Email" />
+                                <ValidationMessage For="@(() => registrationModel.Email)" />
+                            </div>
+                            <div class="form-group">
+                                <InputText id="confirmEmail" class="form-control" placeholder="Confirm E-mail" @bind-Value="@registrationModel.ConfirmEmail" />
+                                <ValidationMessage For="@(() => registrationModel.ConfirmEmail)" />
+                            </div>
+                            <div class="form-group">
+                                <InputText id="passwd" class="form-control" type="password" placeholder="Password" @bind-Value="@registrationModel.Password" />
+                                <ValidationMessage For="@(() => registrationModel.Password)" />
+                            </div>
+                            <div class="form-group">
+                                <InputText id="confirmPassword" class="form-control" type="password" placeholder="Confirm Password" @bind-Value="@registrationModel.ConfirmPassword" />
+                                <ValidationMessage For="@(() => registrationModel.ConfirmPassword)" />
+                            </div>
+                            <div class="form-group">
+                             <label class="control-label" for="terms">
+                                     <InputCheckbox id="terms" @bind-Value="@registrationModel.Terms" /> I agree with the <a href="#">terms and conditions</a> for Registration.
+                             </label>
+                             <ValidationMessage For="@(() => registrationModel.Terms)" />
+                        </div>
 				<br>
-                    <button type="submit" class="btn btn-success">Register</button>
+                    <button type="submit" @onclick="HandleValidSubmit" @onclick:preventDefault>Register</button>
 			</form>
-		</div>
+		</div
 		<div class="overlay-container">
 			<div class="overlay">
 				<div class="overlay-panel overlay-right">
@@ -66,43 +81,58 @@
 <p>Already registered? <a href="/">Sign In</a></p>
 
 @code {
+
+
+
     private RegistrationModel registrationModel = new RegistrationModel();
+    string errorMessage = string.Empty;
 
-   private async Task HandleValidSubmit()
-{
-    var userDto = new UserRegistrationDto 
-    {
-        Email = registrationModel.Email,
-        Password = registrationModel.Password,
-        FirstName = registrationModel.FirstName,
-        LastName = registrationModel.LastName
-    };
 
-    try
+    private async Task HandleValidSubmit()
     {
-        var response = await Http.PostAsJsonAsync("api/user/register", userDto);
-        if (response.IsSuccessStatusCode)
+
+        try
         {
-            // Zarejestrowano pomyślnie
-            navigationManager.NavigateTo("login");
+            var userDto = new UserRegistrationDto
+                {
+                    Email = registrationModel.Email,
+                    Password = registrationModel.Password,
+                    FirstName = registrationModel.FirstName,
+                    LastName = registrationModel.LastName
+              };
+            var response = await Http.PostAsJsonAsync("/api/user/registration", userDto);
+            
+            
+            if (response.IsSuccessStatusCode)
+            {
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Error: {response.StatusCode} {response.ReasonPhrase}, Content: {errorContent}";
+                _logger.LogError(errorMessage);
+                 navigationManager.NavigateTo("error");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // Błąd rejestracji
-            Console.WriteLine($"Error: {response.StatusCode} {response.ReasonPhrase}");
+            errorMessage = $"Exception: {ex.Message}";
+            _logger.LogError(ex, errorMessage);
         }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Exception: {ex.Message}");
-    }
-}
 
+        protected override void OnInitialized()
+        {
+                     //_logger.LogWarning("warning");
+                  //_logger.LogError("error");
+        }
 
 
     private void NavigateToLogin()
     {
         navigationManager.NavigateTo("login");
+        Console.WriteLine("HandleValidSubmit method was called");
     }
 
     public class RegistrationModel
@@ -134,3 +164,38 @@
         public bool Terms { get; set; }
     }
 }
+//Cmentarzysko kodu buuuu 
+        //Http.DefaultRequestHeaders.Accept.Clear();
+        //Http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        //  await Http.PostAsJsonAsync("/api/user/registration",
+        //userDto = new UserRegistrationDto
+        //    {
+        //        Email = registrationModel.Email,
+        //        Password = registrationModel.Password,
+        //        FirstName = registrationModel.FirstName,
+        //        LastName = registrationModel.LastName
+        //  });
+
+
+        
+    //    private async Task TestHandleValidSubmit()
+    //{
+    //    // Utwórz przykładowy model
+    //    RegistrationModel testModel = new RegistrationModel
+    //    {
+    //        FirstName = "Test",
+    //        LastName = "User",
+    //        Email = "testuser@example.com",
+    //        ConfirmEmail = "testuser@example.com",
+    //        Password = "testpassword",
+    //        ConfirmPassword = "testpassword",
+    //        Terms = true
+    //    };
+
+    //    // Przypisz testModel do registrationModel
+    //    registrationModel = testModel;
+
+    //    // Wywołaj metodę HandleValidSubmit
+    //    await HandleValidSubmit();
+    //}

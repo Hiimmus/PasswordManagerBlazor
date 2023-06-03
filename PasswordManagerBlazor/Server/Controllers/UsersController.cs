@@ -10,7 +10,7 @@ using System;
 namespace PasswordManagerBlazor.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/user")]
     public class UserController : ControllerBase
     {
         private readonly IUserRegistrationService _userRegistrationService;
@@ -23,7 +23,7 @@ namespace PasswordManagerBlazor.Server.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
+        [Route("registration")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto userDto)
         {
             if (userDto == null || string.IsNullOrEmpty(userDto.Password))
@@ -37,12 +37,14 @@ namespace PasswordManagerBlazor.Server.Controllers
             {
                 return BadRequest("Registration failed");
             }
-
+            //return Ok(new { Succes });
             return Ok(new { Token = jwtToken });
         }
 
 
+
         [HttpPost]
+        [Route("login")]
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
 
@@ -63,3 +65,4 @@ namespace PasswordManagerBlazor.Server.Controllers
     }
 
 }
+

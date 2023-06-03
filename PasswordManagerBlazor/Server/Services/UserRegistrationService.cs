@@ -30,7 +30,7 @@ namespace PasswordManagerBlazor.Server.Services
             var existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Email == userDto.Email);
             if (existingUser != null)
             {
-                throw new Exception("User with the same email already exists.");
+                throw new UserAlreadyExistsException("User with the same email already exists.");
             }
 
             var user = new User
@@ -47,5 +47,15 @@ namespace PasswordManagerBlazor.Server.Services
 
             return _jwtTokenGenerator.GenerateJwtToken(user);
         }
+    }
+    public class UserAlreadyExistsException : Exception
+    {
+        public UserAlreadyExistsException() { }
+
+        public UserAlreadyExistsException(string message)
+            : base(message) { }
+
+        public UserAlreadyExistsException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }

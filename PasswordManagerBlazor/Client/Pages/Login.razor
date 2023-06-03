@@ -2,6 +2,7 @@
 @inject NavigationManager navigationManager
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
+@using PasswordManagerBlazor.Shared.DTOs
 <head>
     <meta charset="UTF-8">
     <link href="css/main.css" rel="stylesheet" />
@@ -47,7 +48,7 @@
             <br />
             <div class="form-group">
 
-                    <button>Sign In</button>
+                    <button @onclick=HandleValidSubmit @onclick:preventDefault>Sign In</button>
 
             </div>
         </EditForm>
@@ -72,15 +73,15 @@
 
     private async Task HandleValidSubmit()
 {
-   @inject IJSRuntime JsRuntime
-
-private async Task HandleValidSubmit()
-{
+   
     var response = await Http.PostAsJsonAsync<UserLoginDto>("api/user/login", new UserLoginDto 
     { 
         Email = loginModel.Username, 
         Password = loginModel.Password 
+
     });
+     // test@example.com
+     // Test123!
 
     if (response.IsSuccessStatusCode)
     {
@@ -90,7 +91,7 @@ private async Task HandleValidSubmit()
         await JsRuntime.InvokeVoidAsync("localStorageFunctions.setItem", "jwtToken", jwtToken);
 
         // Przekieruj użytkownika na inną stronę
-        navigationManager.NavigateTo("dashboard");
+        navigationManager.NavigateTo("index");
     }
     else
     {
@@ -99,12 +100,9 @@ private async Task HandleValidSubmit()
     }
 }
 
-}
-
-
     private void NavigateToRegistration()
     {
-        navigationManager.NavigateTo("registration");
+        navigationManager.NavigateTo("/user/registration");
     }
 
     public class LoginModel
@@ -113,3 +111,4 @@ private async Task HandleValidSubmit()
         public string Password { get; set; }
     }
 }
+
