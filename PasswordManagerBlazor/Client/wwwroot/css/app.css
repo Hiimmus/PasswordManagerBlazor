@@ -13,6 +13,10 @@ html, body {
     margin: -20px 0 50px;
 }
 
+#blazor-error-ui {
+    display: none;
+}
+
 /*h1:focus {
     outline: none;
 }
@@ -41,8 +45,8 @@ a, .btn-link {
 
 .validation-message {
     color: red;
-}
-
+}*/
+/*
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -70,9 +74,9 @@ a, .btn-link {
 
     .blazor-error-boundary::after {
         content: "An error has occurred."
-    }
+    }*/
 
-.menu-bar {
+/*.menu-bar {
     display: flex;
     justify-content: flex-start;
     align-items: center;

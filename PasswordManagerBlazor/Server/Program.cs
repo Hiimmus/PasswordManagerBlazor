@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -11,6 +11,7 @@ using PasswordManagerBlazor.Server.Services;
 using System.Text;
 using PasswordManagerBlazor.Server.Data;
 using System.Text.Json;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,3 +99,14 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+public class CustomCircuitHandler : CircuitHandler
+{
+    public override Task OnConnectionDownAsync(Circuit circuit, CancellationToken cancellationToken)
+    {
+        // Tutaj możesz zalogować błąd
+        Console.WriteLine("Connection lost");
+        return base.OnConnectionDownAsync(circuit, cancellationToken);
+    }
+}

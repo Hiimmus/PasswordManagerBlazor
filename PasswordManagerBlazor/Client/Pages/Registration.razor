@@ -79,7 +79,11 @@
 </EditForm>
 
 <p>Already registered? <a href="/">Sign In</a></p>
-
+<style>
+    #blazor-error-ui {
+        display: none;
+    }
+</style>
 @code {
 
 
@@ -162,9 +166,8 @@
 
         [Required(ErrorMessage = "You must agree with the terms and conditions.")]
         public bool Terms { get; set; }
-    }
-}
-//Cmentarzysko kodu buuuu 
+
+        //Cmentarzysko kodu buuuu 
         //Http.DefaultRequestHeaders.Accept.Clear();
         //Http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -199,3 +202,5 @@
     //    // Wywołaj metodę HandleValidSubmit
     //    await HandleValidSubmit();
     //}
+    }
+}

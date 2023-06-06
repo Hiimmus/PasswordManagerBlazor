@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @inject NavigationManager navigationManager
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
@@ -64,6 +64,11 @@
     </div>
 </div>
 
+<style>
+    #blazor-error-ui {
+        display: none;
+    }
+</style>
         @code {
     private bool ShowError { get; set; } = false;
     private bool ShowInfo { get; set; } = false;

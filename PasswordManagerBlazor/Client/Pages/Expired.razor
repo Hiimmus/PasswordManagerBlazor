@@ -1,4 +1,4 @@
-﻿@page "/exipred"
+﻿@page "/expired"
 @inject IJSRuntime JSRuntime
 @using PasswordManagerBlazor.Shared.DTOs;
 
@@ -43,7 +43,7 @@
         </label>
 
         <ul class="menu__box">
-            <li><a class="menu__item" href="/">My Passwords</a></li>
+            <li><a class="menu__item" href="/index">My Passwords</a></li>
             <li><a class="menu__item" href="/duplicates">Duplicates</a></li>
             <li><a class="menu__item" href="/expired">Expired</a></li>
             <li><a class="menu__item" href="/logout">Logout</a></li>
@@ -105,7 +105,11 @@
         </div>
     </div>
 </body>
-
+<style>
+    #blazor-error-ui {
+        display: none;
+    }
+</style>
 @code {
 
     private bool IsErrorVisible { get; set; }
