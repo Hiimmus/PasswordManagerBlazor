@@ -1,5 +1,7 @@
 ﻿@page "/token-validator"
+@using Microsoft.AspNetCore.Authorization;
 @inject NavigationManager navigationManager
+@attribute [Authorize]
 <head>
     <meta charset="UTF-8">
     <link href="css/main.css" rel="stylesheet" />

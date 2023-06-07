@@ -8,7 +8,7 @@ namespace PasswordManagerBlazor.Server.Services
 {
     public interface IUserRegistrationService
     {
-        Task<string> RegisterUser(UserRegistrationDto userDto);
+        Task<RegisterResult> RegisterUser(UserRegistrationDto userDto);
     }
 
     public class UserRegistrationService : IUserRegistrationService
@@ -24,13 +24,20 @@ namespace PasswordManagerBlazor.Server.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<string> RegisterUser(UserRegistrationDto userDto)
+        public async Task<RegisterResult> RegisterUser(UserRegistrationDto userDto)
         {
             // Check if user with the same email already exists
             var existingUser = await _context.Users.SingleOrDefaultAsync(u => u.Email == userDto.Email);
             if (existingUser != null)
             {
-                throw new UserAlreadyExistsException("User with the same email already exists.");
+
+                return new RegisterResult { Successful = false, Error = "User with this email is already registered." };
+            
+            }
+
+            if (string.IsNullOrEmpty(userDto.Password) || userDto.Password.Length < 3)
+            {
+                return new RegisterResult { Successful = false, Error = "Password must be at least 3 characters long." };
             }
 
             var user = new User
@@ -42,10 +49,17 @@ namespace PasswordManagerBlazor.Server.Services
                 Active = true
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return new RegisterResult { Successful = false, Error = $"An error occurred while registering the user: {ex.Message}" };
+            }
 
-            return _jwtTokenGenerator.GenerateJwtToken(user);
+            return new RegisterResult { Successful = true };
         }
     }
     public class UserAlreadyExistsException : Exception

@@ -1,5 +1,7 @@
 ﻿@page "/expired"
+@attribute [Authorize]
 @inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization;
 @using PasswordManagerBlazor.Shared.DTOs;
 
 <body>

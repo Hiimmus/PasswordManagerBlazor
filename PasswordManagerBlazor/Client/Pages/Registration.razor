@@ -1,9 +1,11 @@
 ﻿@page "/user/registration"
 @inject NavigationManager navigationManager
 @using System.ComponentModel.DataAnnotations
+@using PasswordManagerBlazor.Client.Service;
 @using PasswordManagerBlazor.Shared.DTOs
 @inject HttpClient Http
 @inject ILogger<Registration> _logger
+@inject IAuthService AuthService
 @using Microsoft.Extensions.Logging
 @*@inject Microsoft.Extensions.Logging.ILogger<Registration> Log*@
 @using System.Text.Json 
@@ -104,20 +106,20 @@
                     FirstName = registrationModel.FirstName,
                     LastName = registrationModel.LastName
               };
-            var response = await Http.PostAsJsonAsync("/api/user/registration", userDto);
+            var response  = await AuthService.Register(userDto);
             
             
-            if (response.IsSuccessStatusCode)
+            if (response.Successful)
             {
                 navigationManager.NavigateTo("/");
             }
-            else
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                errorMessage = $"Error: {response.StatusCode} {response.ReasonPhrase}, Content: {errorContent}";
-                _logger.LogError(errorMessage);
-                 navigationManager.NavigateTo("error");
-            }
+            //else
+            //{
+            //    var errorContent = await response.Content.ReadAsStringAsync();
+            //    errorMessage = $"Error: {response.StatusCode} {response.ReasonPhrase}, Content: {errorContent}";
+            //    _logger.LogError(errorMessage);
+            //     navigationManager.NavigateTo("error");
+            //}
         }
         catch (Exception ex)
         {

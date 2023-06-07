@@ -1,14 +1,10 @@
-﻿using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+﻿using Moq;
 using PasswordManagerBlazor.Server.Services;
 using PasswordManagerBlazor.Server.Data;
 using PasswordManagerBlazor.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using PasswordManagerBlazor.Shared.DTOs;
-using Microsoft.Extensions.Configuration;
-using Castle.Components.DictionaryAdapter.Xml;
+
 
 namespace TestProject1
 {
@@ -40,7 +36,7 @@ namespace TestProject1
             // Arrange
             var userDto = new UserRegistrationDto
             {
-                Email = "test@example.com",
+                Email = "test1@example.com",
                 FirstName = "Test",
                 LastName = "User",
                 Password = "Test123!"
@@ -54,7 +50,7 @@ namespace TestProject1
             var result = await _service.RegisterUser(userDto);
 
             // Assert
-            Assert.Equal("test-token", result); // Verify the JWT token
+            Assert.Equal(true, result.Successful); // Verify the JWT token
             var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == userDto.Email);
             Assert.NotNull(user); // Verify the user was created
             Assert.Equal(userDto.FirstName, user.FirstName);
@@ -63,7 +59,7 @@ namespace TestProject1
         }
 
         [Fact]
-        public async Task RegisterUser_ShouldThrowException_WhenEmailAlreadyExists()
+        public async Task RegisterUser_ShouldReturnError_WhenEmailAlreadyExists()
         {
             // Arrange
             var existingUser = new User
@@ -86,17 +82,54 @@ namespace TestProject1
                 Password = "New123!"
             };
 
-            // Act and Assert
-            var ex = await Assert.ThrowsAsync<Exception>(() => _service.RegisterUser(newUserDto));
-            Assert.Equal("User with the same email already exists.", ex.Message);
+            // Act
+            var result = await _service.RegisterUser(newUserDto);
+
+            // Assert
+            Assert.Equal(false, result.Successful); // Verify the JWT token
+            Assert.Equal("User with this email is already registered.", result.Error); 
         }
 
+        [Fact]
+        public async Task RegisterUser_ShouldReturnError_WhenPasswordIsEmpty()
+        {
+            // Arrange
+            var userDto = new UserRegistrationDto
+            {
+                Email = "test2@example.com",
+                FirstName = "Test",
+                LastName = "User",
+                Password = "" // Empty password
+            };
 
+            // Act
+            var result = await _service.RegisterUser(userDto);
 
+            // Assert
+            Assert.False(result.Successful);
+            Assert.Equal("Password must be at least 3 characters long.", result.Error);
+        }
 
+        [Fact]
+        public async Task RegisterUser_ShouldReturnError_WhenPasswordIsTooShort()
+        {
+            // Arrange
+            var userDto = new UserRegistrationDto
+            {
+                Email = "test10@example.com",
+                FirstName = "Test",
+                LastName = "User",
+                Password = "12" // Password is too short
+            };
 
+            // Act
+            var result = await _service.RegisterUser(userDto);
+
+            // Assert
+            Assert.False(result.Successful);
+            Assert.Equal("Password must be at least 3 characters long.", result.Error);
+        }
     }
-
 }
 
 

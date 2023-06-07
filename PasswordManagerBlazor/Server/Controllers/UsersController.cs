@@ -31,21 +31,21 @@ namespace PasswordManagerBlazor.Server.Controllers
                 return BadRequest("Invalid user data.");
             }
 
-            var jwtToken = await _userRegistrationService.RegisterUser(userDto);
+            var result = await _userRegistrationService.RegisterUser(userDto);
 
-            if (jwtToken == null)
+            if (result == null || !result.Successful)
             {
                 return BadRequest("Registration failed");
             }
             //return Ok(new { Succes });
-            return Ok(new { Token = jwtToken });
+            return Ok(new { result });
         }
 
 
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
         {
 
             if (userLoginDto == null || string.IsNullOrEmpty(userLoginDto.Password))
@@ -53,14 +53,14 @@ namespace PasswordManagerBlazor.Server.Controllers
                 return BadRequest("Invalid login data.");
             }
 
-            var jwtToken = await _userLoginService.LoginUser(userLoginDto);
+            var result = await _userLoginService.LoginUser(userLoginDto);
 
-            if (string.IsNullOrEmpty(jwtToken))
+            if (result == null || !result.Successful)
             {
                 return Unauthorized();
             }
 
-            return Ok(new { Token = jwtToken });
+            return Ok(result);
         }
     }
 

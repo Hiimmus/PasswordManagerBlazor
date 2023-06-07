@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using PasswordManagerBlazor.Server.Data;
 using PasswordManagerBlazor.Shared.DTOs;
 using PasswordManagerBlazor.Shared.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PasswordManagerBlazor.Server.Services
 {
     public interface IUserLoginService
     {
-        Task<string> LoginUser(UserLoginDto userLoginDto);
+        Task<LoginResult> LoginUser(UserLoginDto userLoginDto);
     }
 
     public class UserLoginService : IUserLoginService
@@ -24,7 +26,7 @@ namespace PasswordManagerBlazor.Server.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<string> LoginUser(UserLoginDto userLoginDto)
+        public async Task<LoginResult> LoginUser(UserLoginDto userLoginDto)
         {
             // Search for the user
             var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == userLoginDto.Email);
@@ -37,12 +39,17 @@ namespace PasswordManagerBlazor.Server.Services
                 if (passwordVerificationResult == PasswordVerificationResult.Success)
                 {
                     // Generate and return the JWT token
-                    return _jwtTokenGenerator.GenerateJwtToken(foundUser);
+                    return new LoginResult { Successful = true, Token = _jwtTokenGenerator.GenerateJwtToken(foundUser) };
+                }
+                else
+                {
+                    // If the user password was incorrect, return Error = "Password was wrong"
+                    return new LoginResult { Successful = false, Error = "Password was wrong" };
                 }
             }
 
-            // If the user was not found or password was incorrect, return null
-            return null;
+            // If the user was not found, return Error = "User was not found"
+            return new LoginResult { Successful = false, Error = "User was not found" };
         }
     }
 }

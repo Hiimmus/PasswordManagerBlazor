@@ -1,4 +1,10 @@
-﻿@page "/index"
+﻿@using Microsoft.AspNetCore.Authorization
+
+@page "/index"
+@attribute [Authorize]
+@inject IAuthService AuthService
+@inject NavigationManager navigationManager
+@using PasswordManagerBlazor.Client.Service;
 @using PasswordManagerBlazor.Shared.DTOs;
 
 <head>
@@ -23,7 +29,7 @@
             <li><a class="menu__item" href="/index">My Passwords</a></li>
             <li><a class="menu__item" href="/duplicates">Duplicates</a></li>
             <li><a class="menu__item" href="/expired">Expired</a></li>
-            <li><a class="menu__item" href="/logout">Logout</a></li>
+            <li><a class="menu__item" @onclick=HandleValidSubmit @onclick:preventDefault>Logout</a></li>
         </ul>
     </div>
     <br>
@@ -83,31 +89,39 @@
     }
 </style>
 
-    @code {
-       
-        private string Keyword { get; set; }
-        private List<PasswordDto> PasswordsDto { get; set; } = new List<PasswordDto>();
+@code {
 
-        // Wypełnij listę "PasswordsDto" danymi.
+    private string Keyword { get; set; }
+    private List<PasswordDto> PasswordsDto { get; set; } = new List<PasswordDto>();
 
-        private void Search()
-        {
-            // Zaimplementuj logikę wyszukiwania.
-        }
+    // Wypełnij listę "PasswordsDto" danymi.
 
-        private void CopyToClipboard(string passwordHash)
-        {
-            // Zaimplementuj logikę kopiowania hasła do schowka.
-        }
+    private void Search()
+    {
+        // Zaimplementuj logikę wyszukiwania.
+    }
 
-        private void UpdatePassword(int id)
-        {
-            // Zaimplementuj logikę aktualizacji hasła.
-        }
+    private void CopyToClipboard(string passwordHash)
+    {
+        // Zaimplementuj logikę kopiowania hasła do schowka.
+    }
 
-        private void DeletePassword(int id)
-        {
-            // Zaimplementuj logikę usuwania hasła.
-        }
+    private void UpdatePassword(int id)
+    {
+        // Zaimplementuj logikę aktualizacji hasła.
+    }
+
+    private void DeletePassword(int id)
+    {
+        // Zaimplementuj logikę usuwania hasła.
+    }
+
+    private async void HandleValidSubmit()
+    {
+        await AuthService.Logout();
+        navigationManager.NavigateTo("/");
+    }
+    // Zaimplementuj logikę usuwania hasła.
+    
     }
 

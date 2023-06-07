@@ -59,16 +59,17 @@ namespace TestProject1
             var result = await _service.LoginUser(userLoginDto);
 
             // Assert
-            Assert.Equal("test-token", result); // Verify the JWT token
+            Assert.Equal(true, result.Successful);
+            Assert.Equal("test-token", result.Token); // Verify the JWT token
         }
 
         [Fact]
-        public async Task LoginUser_ShouldReturnNull_WhenCredentialsAreIncorrect()
+        public async Task LoginUser_ShouldReturnFalse_WhenPasswordIsIncorrect()
         {
             // Arrange
             var user = new User
             {
-                Email = "test@example.com",
+                Email = "test2@example.com",
                 FirstName = "Test",
                 LastName = "User",
                 Hash = _passwordHasher.HashPassword(null, "Test123!"),
@@ -88,7 +89,38 @@ namespace TestProject1
             var result = await _service.LoginUser(userLoginDto);
 
             // Assert
-            Assert.Null(result); // The result should be null
+            Assert.Equal(false, result.Successful);
+            Assert.Equal("Password was wrong", result.Error);
+        }
+
+        [Fact]
+        public async Task LoginUser_ShouldReturnFalse_WhenLoginIsIncorrect()
+        {
+            // Arrange
+            var user = new User
+            {
+                Email = "test3@example.com",
+                FirstName = "Test",
+                LastName = "User",
+                Hash = _passwordHasher.HashPassword(null, "Test123!"),
+                Active = true
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            var userLoginDto = new UserLoginDto
+            {
+                Email = "testy@example.com",
+                Password = "Test123!"
+            };
+
+            // Act
+            var result = await _service.LoginUser(userLoginDto);
+
+            // Assert
+            Assert.Equal(false, result.Successful);
+            Assert.Equal("User was not found", result.Error);
         }
     }
 }

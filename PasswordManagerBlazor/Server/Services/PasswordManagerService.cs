@@ -3,7 +3,6 @@ using PasswordManagerBlazor.Server.Data;
 using PasswordManagerBlazor.Shared.DTOs;
 using PasswordManagerBlazor.Shared.Models;
 using System.Security.Claims;
-using static PasswordManagerBlazor.Client.Pages.Duplicates;
 using PasswordDto = PasswordManagerBlazor.Shared.DTOs.PasswordDto;
 
 namespace PasswordManagerBlazor.Server.Services

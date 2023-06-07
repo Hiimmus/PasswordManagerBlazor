@@ -1,7 +1,9 @@
 ﻿@page "/"
 @inject NavigationManager navigationManager
 @inject HttpClient Http
+@inject IAuthService AuthService
 @inject IJSRuntime JsRuntime
+@using PasswordManagerBlazor.Client.Service;
 @using PasswordManagerBlazor.Shared.DTOs
 <head>
     <meta charset="UTF-8">
@@ -9,26 +11,6 @@
     <link href="css/alerts.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-@*<div class="alerts">
-    <div @if(ShowError) class="audun_warn">
-        <div class="alert alert-danger">
-            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Errors:
-            <li>This user is not active or invalid username/password.</li>
-        </div>
-    </div>
-
-    <div @if(ShowInfo) class="audun_info">
-        <i class="fa fa-info-circle" aria-hidden="true"></i>
-        EXAMPLE INFORMATION
-    </div>
-
-    <div @if(ShowLogout) class="audun_success">
-        <div class="alert alert-info">
-            <i class="fa fa-check-circle" aria-hidden="true"></i> Success:
-            <li>You have been succesfully logged out.</li>
-        </div>
-    </div>
-</div>*@
 <h2>Password Manager Login Page</h2>
 <div class="container" id="container">
     <div class="form-container sign-in-container">
@@ -77,33 +59,21 @@
     private LoginModel loginModel = new LoginModel();
 
     private async Task HandleValidSubmit()
-{
-   
-    var response = await Http.PostAsJsonAsync<UserLoginDto>("api/user/login", new UserLoginDto 
-    { 
-        Email = loginModel.Username, 
-        Password = loginModel.Password 
-
-    });
-     // test@example.com
-     // Test123!
-
-    if (response.IsSuccessStatusCode)
     {
-        var jwtToken = await response.Content.ReadAsStringAsync();
-        
-        // Przechowaj token JWT w local storage przeglądarki
-        await JsRuntime.InvokeVoidAsync("localStorageFunctions.setItem", "jwtToken", jwtToken);
+        ShowError = false;
 
-        // Przekieruj użytkownika na inną stronę
-        navigationManager.NavigateTo("index");
+        var result = await AuthService.Login(loginModel);
+
+        if (result.Successful)
+        {
+            navigationManager.NavigateTo("/index");
+        }
+        else
+        {
+            //Error = result.Error!;
+            ShowError = true; 
+        }
     }
-    else
-    {
-        // Wyświetl komunikat o błędzie
-        ShowError = true;
-    }
-}
 
     private void NavigateToRegistration()
     {
