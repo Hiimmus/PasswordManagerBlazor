@@ -4,6 +4,8 @@
 @attribute [Authorize]
 @inject IAuthService AuthService
 @inject NavigationManager navigationManager
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
 @using PasswordManagerBlazor.Client.Service;
 @using PasswordManagerBlazor.Shared.DTOs;
 
@@ -94,26 +96,63 @@
     private string Keyword { get; set; }
     private List<PasswordDto> PasswordsDto { get; set; } = new List<PasswordDto>();
 
-    // Wypełnij listę "PasswordsDto" danymi.
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPasswords();
+    }
+
+    private async Task GetPasswords()
+    {
+        try
+        {
+            PasswordsDto = await HttpClient.GetFromJsonAsync<List<PasswordDto>>("api/password");
+        }
+        catch (Exception ex)
+        {
+            // Handle error if needed
+        }
+    }
 
     private void Search()
     {
-        // Zaimplementuj logikę wyszukiwania.
+        // jeszcze nic
     }
 
-    private void CopyToClipboard(string passwordHash)
+    private async Task CopyToClipboard(string passwordHash)
     {
-        // Zaimplementuj logikę kopiowania hasła do schowka.
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", passwordHash);
+
+        await Task.Delay(TimeSpan.FromSeconds(30));
+
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", string.Empty);
     }
 
     private void UpdatePassword(int id)
     {
-        // Zaimplementuj logikę aktualizacji hasła.
+        navigationManager.NavigateTo($"/updated-password/{id}");
     }
 
-    private void DeletePassword(int id)
+    private async Task DeletePassword(int id)
     {
-        // Zaimplementuj logikę usuwania hasła.
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/password/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                // Jeśli usunięcie się powiedzie, odśwież listę hasel
+                await GetPasswords();
+            }
+            else
+            {
+                // Obsługa błędów
+                Console.WriteLine($"Error deleting password: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Obsługa wyjątków
+            Console.WriteLine($"Exception deleting password: {ex.Message}");
+        }
     }
 
     private async void HandleValidSubmit()
@@ -121,7 +160,6 @@
         await AuthService.Logout();
         navigationManager.NavigateTo("/");
     }
-    // Zaimplementuj logikę usuwania hasła.
     
     }
 

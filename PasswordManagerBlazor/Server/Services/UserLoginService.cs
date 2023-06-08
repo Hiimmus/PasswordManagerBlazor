@@ -36,7 +36,7 @@ namespace PasswordManagerBlazor.Server.Services
                 // Verify the password
                 var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(foundUser, foundUser.Hash, userLoginDto.Password);
 
-                if (passwordVerificationResult == PasswordVerificationResult.Success)
+                    if (passwordVerificationResult == PasswordVerificationResult.Success)
                 {
                     // Generate and return the JWT token
                     return new LoginResult { Successful = true, Token = _jwtTokenGenerator.GenerateJwtToken(foundUser) };

@@ -1,6 +1,9 @@
 ﻿@page "/expired"
 @attribute [Authorize]
 @inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject HttpClient HttpClient
 @using Microsoft.AspNetCore.Authorization;
 @using PasswordManagerBlazor.Shared.DTOs;
 
@@ -118,14 +121,50 @@
     private bool IsInfoVisible { get; set; }
     private bool IsLogoutVisible { get; set; }
 
-
-
     private List<PasswordDto> passwordsDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPasswords();
+    }
+
+    private async Task LoadPasswords()
+    {
+        passwordsDto = await Http.GetFromJsonAsync<List<PasswordDto>>("api/password/expired");
+    }
 
     private async Task CopyToClipboard(string passwordHash)
     {
         await JSRuntime.InvokeVoidAsync("clipboardCopy", passwordHash);
         IsInfoVisible = true;
+    }
+
+    private void UpdatePassword(int id)
+    {
+        navigationManager.NavigateTo($"/updated-password/{id}");
+    }
+
+    private async Task DeletePassword(int id)
+    {
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/password/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                // Jeśli usunięcie się powiedzie, odśwież listę hasel
+                await LoadPasswords();
+            }
+            else
+            {
+                // Obsługa błędów
+                Console.WriteLine($"Error deleting password: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Obsługa wyjątków
+            Console.WriteLine($"Exception deleting password: {ex.Message}");
+        }
     }
 }
 @functions {
@@ -135,13 +174,7 @@
     passwordsDto = new List<PasswordDto>
     {
         // Przykładowe dane
-        new PasswordDto
-        {
-            Url = "example.com",
-            Email = "user@example.com",
-            PasswordHash = "123456",
-            LastChange = DateTime.Now.AddDays(-1)
-        }
+        
     };
 }
 

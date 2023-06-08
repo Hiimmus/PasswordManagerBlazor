@@ -15,6 +15,7 @@ namespace PasswordManagerBlazor.Server.Services
         Task UpdatePassword(PasswordDto passwordDto);
         Task<PasswordDto> GetPassword(int id);
         Task<IEnumerable<PasswordDto>> GetDuplicatePasswordsForUser(long userId);
+        Task<IEnumerable<PasswordDto>> GetExpiredPasswordsForUser(long userId);
     }
 
     public class PasswordManagerService : IPasswordManagerService

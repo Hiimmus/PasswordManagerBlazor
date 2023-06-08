@@ -1,6 +1,10 @@
 ﻿@page "/duplicates"
 @using Microsoft.AspNetCore.Authorization;
+@using PasswordManagerBlazor.Shared.DTOs;
 @inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject HttpClient HttpClient
 @attribute [Authorize]
 
 <body>
@@ -120,20 +124,46 @@
     bool IsInfoVisible { get; set; }
     bool IsLogoutVisible { get; set; }
 
-    // Przykładowe dane - zastąp je danymi z bazy danych
-    List<PasswordDto> passwordsDto = new List<PasswordDto>
+    private List<PasswordDto> passwordsDto { get; set; }
+    
+    protected override async Task OnInitializedAsync()
     {
-        new PasswordDto { Url = "example.com", Email = "user@example.com", PasswordHash = "password123", LastChange = DateTime.Now },
-        new PasswordDto { Url = "example2.com", Email = "user2@example.com", PasswordHash = "password456", LastChange = DateTime.Now.AddDays(-1) },
-    };
-
-    public class PasswordDto
-    {
-        public string Url { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public DateTime LastChange { get; set; }
+        await LoadPasswords();
     }
+
+    private async Task LoadPasswords()
+    {
+        passwordsDto = await Http.GetFromJsonAsync<List<PasswordDto>>("api/password/duplicates");
+    }
+
+    private void UpdatePassword(int id)
+    {
+        navigationManager.NavigateTo($"/updated-password/{id}");
+    }
+
+    private async Task DeletePassword(int id)
+    {
+        try
+        {
+            var response = await HttpClient.DeleteAsync($"api/password/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                // Jeśli usunięcie się powiedzie, odśwież listę hasel
+                await LoadPasswords();
+            }
+            else
+            {
+                // Obsługa błędów
+                Console.WriteLine($"Error deleting password: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Obsługa wyjątków
+            Console.WriteLine($"Exception deleting password: {ex.Message}");
+        }
+    }
+
 
     private async Task CopyToClipboard(string text)
     {
