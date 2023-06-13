@@ -75,17 +75,14 @@
 			</div>
 		</div>
 	</div>
-        <p>Already registered? <a href="/">Sign In</a></p>
 </body>
   
 </EditForm>
-
-<p>Already registered? <a href="/">Sign In</a></p>
-<style>
+@*<style>
     #blazor-error-ui {
         display: none;
     }
-</style>
+</style>*@
 @code {
 
 
@@ -137,7 +134,7 @@
 
     private void NavigateToLogin()
     {
-        navigationManager.NavigateTo("login");
+        navigationManager.NavigateTo("/");
         Console.WriteLine("HandleValidSubmit method was called");
     }
 

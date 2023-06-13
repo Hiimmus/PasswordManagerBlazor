@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /PasswordManagerBlazor/Server/Services/JwtTokenGenerator.cs
+/PasswordManagerBlazor/Client/wwwroot/css/app.css
